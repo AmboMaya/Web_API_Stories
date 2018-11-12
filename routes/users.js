@@ -25,24 +25,26 @@ router.get('/:id', (req, res) => {
     })
 })
 
-router.get('/:id', (req, res) => {
-  const id = Number(req.params.id)
-  db.createUser(id)
-    .then(user => {
-      res.json({user: user})
+router.post('/', (req, res) => {
+  db.addUser(req.body)
+    .then(users => {
+      res.json(users[0])
     })
     .catch(err => {
-      res.status(500).send('DATABASE ERROR: ' + err.message)
+      res.json({
+        message: 'NOPE THAT DID NOT WORK',
+        error: err.message
+      })
     })
 })
 
-router.post('/', (req, res) => {
-  db.createUser(req.body)
-    .then(id => {
-      res.status(201).json({
-        message: 'YAY IT WORKED',
-        id
-      })
+router.put('/:id', (req, res) => {
+  const id = Number(req.params.id)
+  const updatedUser = req.body
+
+  db.updateUser(id, updatedUser)
+    .then((obj) => {
+      res.json(obj ? 'Yay, it worked!' : 'User doesn\'t exist :(')
     })
     .catch(err => {
       res.json({
